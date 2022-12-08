@@ -1,13 +1,13 @@
-import javax.lang.model.util.ElementScanner14;
+import javax.swing.table.*;
 
 //Look at ...
 //M.F, 07-12-2022
 
-public class GameOfLife 
+public class GameOfLife extends AbstractTableModel
 {
     //attributes
-    private int width = 3;
-    private int height = 3;
+    private int width = 25;
+    private int height = 25;
     // 1. Dimension ... line
     // 2. Dimension ...  column
     //Info: one line before and after, one column before and after as a border
@@ -70,21 +70,57 @@ public class GameOfLife
                 gameBoardNew[i][j] = newCell(i, j);
             }
         }
+        updateGeneration();
     }
+
+    //now multiple generations
+    void calculateMultipleNewGeneration (int n, int delay)
+    {
+        for(int i = 0; i < n; i++)
+        {
+            calculateNewGeneration();
+            try 
+            {
+                Thread.sleep(delay);
+            } 
+            catch (InterruptedException e) 
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //Reminder: this is called Overlaoding Methods
+    void calculateMultipleNewGeneration(int n)
+    {
+        calculateMultipleNewGeneration(n, 0);
+    }
+
 
     //write the second array into the first array
     void updateGeneration()
     {
-        gameBoard = gameBoardNew;
+        //Attention: This way only the reference in the storage gets updated
+        //gameBoard = gameBoardNew;
+        for(int i = 1; i <= height; i++)
+        {
+            for(int j = 1; j <= width; j++)
+            {
+                gameBoard[i][j] = gameBoardNew[i][j];
+            }
+        }
+        fireTableDataChanged();
     }
+
+    
 
 
     void initialize() //Example "Pending Clock"
     {
-        gameBoard[1][2] = true; 
-        gameBoard[2][1] = true; gameBoard[2][3] = true;
-        gameBoard[3][1] = true; gameBoard[3][2] = true;
-        //gameBoard[4][2] = true;
+        gameBoard[1][3] = true; 
+        gameBoard[2][1] = true; gameBoard[2][2] = true;
+        gameBoard[3][3] = true; gameBoard[3][4] = true;
+        gameBoard[4][2] = true;
     }
 
     void output()
@@ -99,6 +135,55 @@ public class GameOfLife
         }
         System.out.println();
         System.out.println("--------------------------------");
+    }
+
+    @Override
+    public int getColumnCount() {
+        // ähm... with/without border?
+        return width;
+    }
+
+    @Override
+    public int getRowCount() {
+        // ähm... with/without border?
+        return height;
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        if(gameBoard[rowIndex][columnIndex])
+        {
+            return life;
+        }
+        else
+        {
+            return death;
+        }
+        
+    }
+
+    //row, col ... where has changed something
+    // obj ... the "new" value, that got entered
+    @Override
+    public void setValueAt(Object val, int row, int col) 
+    {
+        if(val.equals(life))
+        {
+            gameBoard[row][col] = true;
+        }
+        else
+        {
+            gameBoard[row][col] = false;
+        }
+        // update the cell value in the view
+        fireTableCellUpdated(row, col);
+    }
+
+    @Override
+    public boolean isCellEditable(int row, int col)
+    {
+        //With this all cells are editable
+        return true;
     }
 
     //constructor
