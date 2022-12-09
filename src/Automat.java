@@ -33,9 +33,16 @@ public abstract class Automat extends AbstractTableModel
 		});
 		mehrfach.start();
 	}
-	// Zur Erinnerung: Überladen ... vgl. optionale Parameter
+	
+    // Zur Erinnerung: Überladen ... vgl. optionale Parameter
 	void berechneMehrereGenerationen(int anzahl) 
     {
 		berechneMehrereGenerationen(anzahl,0);
 	}
+    
+    // damit sind ALLE Zellen veränderbar
+    @Override public boolean isCellEditable(int row, int col) 
+    {
+		return true;
+	} 
 }

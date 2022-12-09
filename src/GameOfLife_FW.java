@@ -102,10 +102,7 @@ public class GameOfLife_FW extends Automat{
 	@Override public int getColumnCount() {
 		return breite; // ähm ... mit/ohne rand?!
 	}
-	@Override public boolean isCellEditable(int row, int col) {
-	    // damit sind ALLE Zellen veränderbar
-		return true;
-	} 
+	
 	// row, col ... wo hat sich was geändert
 	// obj ... der "neue" Wert, der eingegeben wurde 
 	@Override public void setValueAt(Object obj, int row, int col) {

@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
+
 import javax.swing.*;
 
 // Einheitliche Oberfläche für mehrere Automaten
@@ -23,10 +25,51 @@ public class AutomatenView_FW extends JFrame {
 	// Spezielle Methoden, hier "normales" File-Management -------------
 	// Überlegenswert: in separater Klasse "auslagern"
 	void speichern() {
-		System.out.println("Speichern ...");
+		try 
+		{
+			//1. Einen FileOutputStream erzeugen
+			// (wenn die Datei speicherTest.ser nicht existiert, erzeuge sie)
+			FileOutputStream dateiStrom = new FileOutputStream("speicherTest.ser");
+
+			//2. Einen ObjectOutputStream erzeugen
+			ObjectOutputStream objektOut = new ObjectOutputStream(dateiStrom);
+
+			//3. die Objekte schreiben
+			objektOut.writeObject(automat);
+
+			//4. ObjectOutputStream schließen
+			objektOut.close();
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
 	}
-	void laden() {
-		System.out.println("Laden ...");
+	void laden() 
+	{
+		try 
+		{
+		// 1. Einen FileInputStream erzeugen
+		//    (wenn die Datei speicherTest.ser nicht existiert, wird sie angelegt)
+		FileInputStream dateiStrom = new FileInputStream( "speicherTest.ser");
+
+		// 2. eine ObjectInputStream erzeugen
+		ObjectInputStream objektIn = new ObjectInputStream( dateiStrom );
+
+		// 3. die Objekte lesen
+		Object a = objektIn.readObject();
+
+		// 4. Objekte casten, denn readObject() wird immer Objekte vom Typ Object liefern
+		automat = (Automat) a;
+		// 5. ObjectOutputStream schließen
+		
+		objektIn.close();
+		tabelle.setModel(automat);
+		} 
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	// -----------------------------------------------------------------
@@ -61,8 +104,28 @@ public class AutomatenView_FW extends JFrame {
 				System.out.println("Neues Spiel ...GOL");
 				//erst hier wird ein Objetk aus der Klasse erzeugt
 				automat = new GameOfLife_FW(); 
+				tabelle.setModel(automat);
 			}
 		});
+		jmiAddi.addActionListener(new ActionListener() 
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				automat = new Addierer();
+				tabelle.setModel(automat);
+			}
+		});
+		jmiMulti.addActionListener(new ActionListener() 
+		{
+			@Override
+			public void actionPerformed(ActionEvent e) 
+			{
+				automat = new Multiplizierer();
+				tabelle.setModel(automat);
+			}
+		});
+
 	    // Add the menu items to the menu
 	    jmNew.add(jmiGOL);
 	    jmNew.add(jmiAddi);
